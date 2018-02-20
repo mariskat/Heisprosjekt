@@ -35,6 +35,6 @@ void clear_orders_at_floor(int floor){
   printf("Done clear_orders_at_floor");
 };
 
-bool get_new_direction(){
+elev_motor_direction_t get_new_direction(){
   TILSTANDSMASKIN????
 };
