@@ -18,7 +18,7 @@ void timer_stop(void){
 // Check if time is up (3 sec)
 bool timer_ timeIsUp(void){
   
-  if (start_time==-1){                          //Return false if the door is closed
+  if (start_time==-1){                           //Return false if the door is closed
        return false;
   }
   
@@ -28,6 +28,3 @@ bool timer_ timeIsUp(void){
          return false;
   }
 }
-  
-  
-  #endif /*timer.c*/
