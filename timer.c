@@ -1,10 +1,5 @@
 #include "timer.h"
 
-#include <assert.h>
-#include <stdbool.h>
-#include <time.h>
-
-
 //Start timer
 void timer_start(void){                          //Start timer if the door is open
     start_time = time(NULL); 
