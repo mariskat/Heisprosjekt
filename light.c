@@ -17,10 +17,14 @@
 
 
 
-void clear_lights_at_floor(){
+void clear_lights_at_floor(floor){
+  elev_set_button_lamp(BUTTON_CALL_DOWN, floor, 0);
+  elev_set_button_lamp(BUTTON_CALL_UP, floor, 0);
+  elev_set_button_lamp(BUTTON_COMMAND, floor, 0);
+}
   //Implementeres vha trippel forløkke elev_set_button_lamp(a,b,0);
 
-
+  
 
 
   
