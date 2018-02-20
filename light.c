@@ -3,7 +3,7 @@
 
 
 //Funksjoner
-void set_lights(floor,type);
+void set_lights( floor,type);
 void clear_lights_at_floor();
 void door_open();
 void door_close();
