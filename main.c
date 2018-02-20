@@ -35,6 +35,17 @@ int main() {
           
         
         //overordnet buttonsfunksjon
+        
+        //Arrived@Floor
+            //
+            int current_floor = elev_get_floor_sensor_signal(void);
+            elev_set_floor_indicator(current_floor);
+            if (check_floor_orders()){
+                elev_set_motor_direction(DIRN_STOP);
+                clear_orders_at_floor();
+                elev_set_door_open_lamp(1);                 //Wait 3 seconds
+                elev_set_motor_direction(queue.get_new_direction());  //Reevaluvates most efficient direction
+            }
             
             
         }
