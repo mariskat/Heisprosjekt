@@ -1,4 +1,6 @@
 
+#include queue.h
+
 //Variable
 bool previous_dir;
 bool previous_floor;
