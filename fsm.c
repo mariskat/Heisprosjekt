@@ -18,7 +18,7 @@ state_t currentstate = INITIALIZE;
 int currentFloor;
 elev_motor_direction_t direction;
 
-//S
+//Arrived at floor
 void fsm_event_arrived_at_floor(int new_floor){
 	currentfloor = new_floor;
 	
@@ -33,10 +33,10 @@ void fsm_event_arrived_at_floor(int new_floor){
 	case IDLE:		
 	case DOOROPEN:
 		elev_set_door_open_lamp(1);
-		clear_orders_at_floor(currentfloor);
+		queue_clear_orders_at_floor(currentfloor);
 		timer_start();
 
-			for(int button = 0; button < N_BUTTONS; button++){
+			for(int button = 0; button < N_BUTTONS; button++){ //BUTTONS ER FEIL!!
                 	elev_set_button_lamp(button,currentfloor,0);
 	        }
 		break;
@@ -47,12 +47,12 @@ void fsm_event_arrived_at_floor(int new_floor){
 		if(queue_should_stop(currentfloor, direction)){
 			elev_set_motor_direction(DIRN_STOP);
 			elev_set_door_open_lamp(1);
-			clear_orders_at_floor(currentfloor);
+			queue_clear_orders_at_floor(currentfloor);
 			timer_start();
 			currentstate = DOOROPEN;
 
 			for(button = 0; button < N_BUTTONS; button++){
-                	elev_set_button_lamp(button,currentfloor,0);
+                	elev_set_button_lamp(button,currentfloor,0); //BUTTONS ER FEIL
 	        	}
 		
 		}
@@ -69,8 +69,8 @@ void fsm_event_order_button_pressed(button, floor){
         case IDLE:
 
         	if (floor!=currentfloor){
-				add_to_queue(button, floor);
-				elev_set_button_lamp(button, floor, 1);
+				queue_add_to_queue(button, floor);
+				elev_set_button_lamp(button, floor, 1); //BUTTONS ER FEIL
 				direction = queue_get_direction(previous_direction, currentfloor);
 				elev_set_motor_direction(direction);
 				previous_direction = direction;
@@ -87,7 +87,7 @@ void fsm_event_order_button_pressed(button, floor){
 	case DOOROPEN:
 	case MOVING:
 		queue_add_orders(button, floor);
-		elev_set_button_lamp(button, floor, 1);
+		elev_set_button_lamp(button, floor, 1); //BUTTONS ER FEIL
 
 		break;
 
@@ -119,7 +119,7 @@ void fsm_event_order_button_pressed(button, floor){
 		queue_remove_all_orders();
 		for(floorbtn = 0; floorbtn < N_FLOORS; floorbtn++){
            		for(button = 0; button < N_BUTTONS; button++){
-                		elev_set_button_lamp(button,floorbtn,0);
+                		elev_set_button_lamp(button,floorbtn,0); //BUTTONS ER FEIL
           		  }
         		}
 		elev_set_stop_lamp(1);
