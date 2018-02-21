@@ -16,7 +16,7 @@ int orders[][];
 //elev_button_type_t er en enum: BUTTON_CALL_UP=0, BUTTON_CALL_DOWN=1, BUTTON_COMMAND=2
 void add_to_queue(int floor,elev_button_type_t buttons);
 
-bool check_floor_orders();
+bool check_floor_orders(int floor);
 
 void clear_orders_at_floor( int floor);
 
