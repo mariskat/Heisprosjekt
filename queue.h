@@ -6,7 +6,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-//FUNKSJONER FRA ELEV.C
 
 
 //Variable: 
@@ -19,8 +18,15 @@ void add_to_queue(floor,elev_button_type_t buttons);
 
 bool check_floor_orders();
 
-void clear_orders_at_floor();
+void clear_orders_at_floor(int floor);
 
 void clear_all_orders();
 
-bool get_new_direction();
+bool get_new_direction(int previous_floor, int previous_direction);
+
+
+int stop_queue(int floor, );
+
+
+
+
