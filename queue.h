@@ -40,4 +40,4 @@ bool queue_orders_upward(currentFloor);
 bool queue_double_order(elev_button_type_t button, int floor);
 
 //Gets new direction
-int queue_get_new_direction(int previous_direction, int previous_floor);
+int elev_motor_direction_t queue_get_new_direction(int last_dirn, int floor);
