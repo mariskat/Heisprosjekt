@@ -8,8 +8,8 @@
 #include <time.h>
 
 
-/*BUTTON_CALL_UP=0, BUTTON_CALL_DOWN=1, BUTTON_COMMAND=2
-*/
+/*DIRN_DOWN=-1, DIRN_STOP=0,DIRN_UP=1	
+  BUTTON_CALL_UP=1, BUTTON_CALL_DOWN=-1, BUTTON_COMMAND=2 */
 
 
 //Sets the motor direction of the elevator: elev_motor_direction_t is enum: DIRN_DOWN=-1, DIRN_STOP=0, DIRN_UP=1
