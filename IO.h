@@ -22,3 +22,7 @@
 
 void clear_lights_at_floor(){
   //Implementeres vha trippel forløkke elev_set_button_lamp(a,b,0);
+
+  
+//elev_button_type_t er en enum: BUTTON_CALL_UP=0, BUTTON_CALL_DOWN=1, BUTTON_COMMAND=2
+int elev_get_button_signal(elev_button_type_t button, int floor);
