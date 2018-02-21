@@ -1,7 +1,4 @@
 #include "elev.h"
-#include "light.h"
-#include "buttons.h"
-#include "elevator.h"
 #include "timer.h"
 
 #include <assert.h>
