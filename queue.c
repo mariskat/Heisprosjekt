@@ -1,10 +1,4 @@
 #include "queue.h"
-#include "elev.h"
-#include <assert.h>
-#include <stdbool.h>
-#include <time.h>
-#include <stdio.h>
-
 
 
 int orders[4][3]={
