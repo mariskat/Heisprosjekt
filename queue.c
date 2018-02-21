@@ -96,6 +96,22 @@ bool queue_double_order(elev_button_type_t button, int floor){
 }
 	
 
-elev_motor_direction_t queue_get_new_direction(){
-  TILSTANDSMASKIN????
-};
+elev_motor_direction_t queue_get_new_direction(int last_dirn, int floor){
+	if (last_dirn == DIRN_DOWN){						//If the previous direction was downwards
+		if(queue_orders_down(floor)){
+			return DIRN_DOWN;
+			}
+		}
+	if (last_dirn == DIRN_UP){
+		if (queue_orders_upward(floor){
+			return DIRN_UP;
+			}
+		}
+	if (queue_orders_downward(floor)){
+		return DIRN_DOWN;
+	}
+	if (queue_orders_upward(floor){
+		return DIRN_UP;
+	}
+	return DIRN_STOP;
+ }
