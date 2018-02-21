@@ -25,13 +25,41 @@ void queue_clear_orders_at_floor(int floor){
   orders[floor]={0,0,0};
 };
 
+void queue_clear_all_orders(){
+ 		for(int i=0;i<=3;i++){
+      for(int j=0;j<=4;j++){
+        orders [j][i] = 0;
+      }
+    };
+
 elev_motor_direction_t queue_get_new_direction(){
   TILSTANDSMASKIN????
 };
 
+  
+int queue_should_stop(int floor, );
+  
+  int queue_should_stop(int floor,int direction){
+    if (orders[floor][BUTTON_COMMAND] == 1){
+		return true;
+    }
+    if (direction == DIRN_UP){
+        if (orders[floor][BUTTON_CALL_UP] == 1){
+            return true;
+		}
+        if (queue_orders_above(floor))
+            return false;
+    }
+    if (direction == DIRN_DOWN){
+        if (orders[floor][BUTTON_CALL_DOWN] == 1){
+            return true;
+		}
+        if (queue_orders_below(floor)){
+            return false;
+		}
+    }
 
-void queue_clear_all_orders(){
- 
-  ;
+    return true;
+}
 
-int queue_stop(int floor, elev_button_type_t buttons);
+int queue_double_order(elev_button_type_t button, int floor);
