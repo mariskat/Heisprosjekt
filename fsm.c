@@ -36,7 +36,7 @@ void fsm_event_arrived_at_floor(int new_floor){
 		queue_clear_orders_at_floor(currentfloor);
 		timer_start();
 
-			for(int button = 0; button < N_BUTTONS; button++){ //BUTTONS ER FEIL!!
+			for(int button = 0; button < N_BUTTONS; button++){ //Vi må spør studass om vi kan bruke int, eller om vi må bruke elev_button_type_t button
                 	elev_set_button_lamp(button,currentfloor,0);
 	        }
 		break;
@@ -52,7 +52,7 @@ void fsm_event_arrived_at_floor(int new_floor){
 			currentstate = DOOROPEN;
 
 			for(button = 0; button < N_BUTTONS; button++){
-                	elev_set_button_lamp(button,currentfloor,0); //BUTTONS ER FEIL
+                	elev_set_button_lamp(button,currentfloor,0); // Vi må spør studass om vi kan bruke int, eller om vi må bruke elev_button_type_t button
 	        	}
 		
 		}
@@ -64,13 +64,13 @@ void fsm_event_arrived_at_floor(int new_floor){
 }
 
 
-void fsm_event_order_button_pressed(button, floor){ 
+void fsm_event_order_button_pressed(elev_button_type_t button, int floor){ 
 	switch(currentstate){
         case IDLE:
 
         	if (floor!=currentfloor){
 				queue_add_to_queue(button, floor);
-				elev_set_button_lamp(button, floor, 1); //BUTTONS ER FEIL
+				elev_set_button_lamp(button, floor, 1); 
 				direction = queue_get_direction(previous_direction, currentfloor);
 				elev_set_motor_direction(direction);
 				previous_direction = direction;
@@ -87,8 +87,7 @@ void fsm_event_order_button_pressed(button, floor){
 	case DOOROPEN:
 	case MOVING:
 		queue_add_orders(button, floor);
-		elev_set_button_lamp(button, floor, 1); //BUTTONS ER FEIL
-
+		elev_set_button_lamp(button, floor, 1);
 		break;
 
 	case STOPBETWEENFLOORS:
