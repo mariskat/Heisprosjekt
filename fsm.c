@@ -5,7 +5,13 @@
 
 #include <stdio.h>
 
-typedef enum{
+
+/* We define an enum named state_t for the different possible states for the lift. 
+   Hereafter, we create a variable of this enum named current_state which will hold the current state of the lift
+   through the whole system  */
+
+typedef enum
+{
 	INITIALIZE,
 	IDLE,
 	MOVING,
@@ -14,72 +20,83 @@ typedef enum{
 	STOPBETWEENFLOORS
 } state_t;
 
-state_t currentstate = INITIALIZE;
+state_t current_state = INITIALIZE;
+
 int currentFloor;
 elev_motor_direction_t direction;
 
-//Arrived at floor
-void fsm_event_arrived_at_floor(int new_floor){
+
+
+/* Arrived@floor: Given the current floor and the current state of the lift, this function will evaluvate which way the lift should
+   drive. When the current state is INITIALIZE, the lift will stop at the first floor reached and change state to idle. If the lift arrives a floor while
+   MOVING, the queue_should_stop() code will check if there are any orders at the floor in the right direction and stop accordingly. 
+   If the the lift is already at the floor (DOOROPEN or IDLE) the door light will be set. */
+
+void fsm_event_arrived_at_floor(int new_floor)
+{
 	currentfloor = new_floor;
-	
-	switch(currentstate){
+	 
+	switch(current_state)
+	{
 			
-	case INITIALIZE:
-		elev_set_motor_direction(DIRN_STOP);
-		elev_set_floor_indicator(currentfloor);
-		currentstate = IDLE;
-		break;
-
-	case IDLE:		
-	case DOOROPEN:
-		elev_set_door_open_lamp(1);
-		queue_clear_orders_at_floor(currentfloor);
-		timer_start();
-
-			for(int button = 0; button < N_BUTTONS; button++){ //Vi må spør studass om vi kan bruke int, eller om vi må bruke elev_button_type_t button
-                	elev_set_button_lamp(button,currentfloor,0);
-	        }
-		break;
-
-	case MOVING:
-		elev_set_floor_indicator(currentfloor);
-
-		if(queue_should_stop(currentfloor, direction)){
+		case INITIALIZE:
 			elev_set_motor_direction(DIRN_STOP);
+			elev_set_floor_indicator(currentfloor);
+			current_state = IDLE;
+			break;
+
+		case IDLE:		
+		case DOOROPEN:
 			elev_set_door_open_lamp(1);
 			queue_clear_orders_at_floor(currentfloor);
-			timer_start();
-			currentstate = DOOROPEN;
+			timer_start();                	
+			break;
 
-			for(button = 0; button < N_BUTTONS; button++){
-                	elev_set_button_lamp(button,currentfloor,0); // Vi må spør studass om vi kan bruke int, eller om vi må bruke elev_button_type_t button
-	        	}
-		
-		}
-		break;
+		case MOVING:
+			elev_set_floor_indicator(currentfloor);
 
-	default:
-		break;
+			if(queue_should_stop(currentfloor, direction))
+			{
+				elev_set_motor_direction(DIRN_STOP);
+				elev_set_door_open_lamp(1);
+				queue_clear_orders_at_floor(currentfloor);
+				timer_start();
+				current_state = DOOROPEN;
+			}
+			break;
+
+		default:
+			break;
 	}
 }
 
 
+
+/* Order button is pushed: This function takes the button type and the floor of the button pushed as arguments. The order is added
+   to the queue and the according lights are set. If the lift is in IDLE and the order is not for the current floor, the lift will 
+   drive to floor immediatley and the state will changed to MOVING. Or else, the state will be changed to DOOROPEN and the door light
+   will be set. If the lift is busy (MOVING or DOOR OPEN) it will only set the lights and add the order to the queue. If the lift is
+   STOPBETWEENFLOORS, the order will be added to queue and evaluvate which direction the lift should drive.   */
+
+
 void fsm_event_order_button_pressed(elev_button_type_t button, int floor){ 
-	switch(currentstate){
+	switch(current_state){
         case IDLE:
 
-        	if (floor!=currentfloor){
+        	if (floor!=currentfloor)
+		{
 				queue_add_to_queue(button, floor);
 				elev_set_button_lamp(button, floor, 1); 
 				direction = queue_get_direction(previous_direction, currentfloor);
 				elev_set_motor_direction(direction);
 				previous_direction = direction;
-				currentstate = MOVING;
-		}
-		else{
+				current_state = MOVING;
+		}		
+		else
+		{
 				elev_set_door_open_lamp(1);
 				timer_start();
-				currentstate = DOOROPEN;
+				current_state = DOOROPEN;
 			
 		} 
 		break;
@@ -93,22 +110,25 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor){
 	case STOPBETWEENFLOORS:
 		queue_add_orders(button, floor);
 
-		if (floor==currentfloor){
+		if (floor==currentfloor)
 			elev_set_motor_direction(-(previous_direction));
-		} 
-		else {
+		else 
 			direction = queue_get_direction(previous_direction, currentfloor);
 			elev_set_motor_direction(direction);
-		}
-		currentstate = MOVING;
+		
+		current_state = MOVING;
 		break;
 
 	default:
         	break;
 	}
 	
-	void fsm_event_stop_pressed(){ 
-	switch(currentstate){
+	
+/* Stop button is pressed: If the stop button is pushed, the lift will stop and the queue orders will be erased. If the lift is at
+   a floor, the door will be open. The state will be changed to EMERGENCYSTOP. */	
+	
+void fsm_event_stop_pressed(){ 
+	switch(current_state){
 			
 	case MOVING:
 	case DOOROPEN:
@@ -125,10 +145,10 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor){
 
 		if (elev_get_floor_sensor_signal() != -1){
 			elev_set_door_open_lamp(1);
-			timer_start();
+			
 		}
 
-		currentstate = EMERGENCYSTOP;
+		current_state = EMERGENCYSTOP;
 		break;
 
 	default:
@@ -136,17 +156,21 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor){
 	}
 }
 
+/* Stop button is released: The stop button light will be turned off. If the lift is at a floor, the door wil stay open for another
+   three seconds and the lift will be in IDLE. Or else, the lift will be set to STOPBETWEENFLOOR state*/
+	
 void fsm_event_stop_released(){
-	switch(currentstate){
+	switch(current_state){
 	case EMERGENCYSTOP:
 		elev_set_stop_lamp(0);
 		
 		if (elev_get_floor_sensor_signal() == -1){
-		    currentstate = STOPBETWEENFLOORS;
+		    current_state = STOPBETWEENFLOORS;
 		}
 		else {
 			elev_set_door_open_lamp(0);
-			currentstate = IDLE;
+			current_state = IDLE;
+			timer_start();
 			
 		}
 		break;
@@ -155,8 +179,9 @@ void fsm_event_stop_released(){
 		break;
 	}
 	
+
 void fsm_event_door_closed(){
-	switch(currentstate){
+	switch(current_state){
 	case DOOROPEN:
 		elev_set_door_open_lamp(0);
 		direction = queue_get_direction(previous_direction, currentfloor);
@@ -164,10 +189,10 @@ void fsm_event_door_closed(){
 		previous_direction = direction;
 
 		if(direction!=DIRN_STOP){
-			currentstate = MOVING;
+			current_state = MOVING;
 		} 
 		else {
-			currentstate = IDLE;
+			current_state = IDLE;
 		}		
 		break;
 
