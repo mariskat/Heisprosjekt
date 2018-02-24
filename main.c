@@ -82,7 +82,7 @@ int main() {
 					{
             					fsm_event_order_button_pressed(buttontype, buttonfloor);
 						if (buttonfloor == last_floor_visited)
-							{fsm_event_arrived_at_floor(last_floor_visited);}
+							fsm_event_arrived_at_floor(last_floor_visited);
 						
 					}
         		}
@@ -95,7 +95,7 @@ int main() {
           	int floor = elev_get_floor_sensor_signal();
 	    
            	if(floor != last_floor_visited  &&  floor != -1)       
-			{fsm_event_arrived_at_floor(floor);}
+			fsm_event_arrived_at_floor(floor);
            		
 	    	last_floor_visited = floor;
 	    
@@ -103,7 +103,7 @@ int main() {
        		/* Door closing: This part of the code checks if the time is up, and closes the door if the time is up */
 	    
 		if (timer_isTimeOut())
-			{fsm_event_door_closed();}
+			fsm_event_door_closed();
 		
     	}
             
