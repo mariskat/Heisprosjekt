@@ -11,7 +11,7 @@ int last_floor_visited = -9;
 int main() {
 	
     /* Initializing hardware. This will return an error if the initializing is not sucsessful. 
-       If successful, the lift will start driving upwards.  */
+       If successful, the lift will start driving upwards. */
 	
     if (!elev_init()) 
     {
@@ -19,7 +19,8 @@ int main() {
         return 1;
     }
 
-    printf("Press STOP button to stop elevator and exit program.\n");
+    printf("Use to the obstruction signal to exit program.\n");
+	
     elev_set_motor_direction(DIRN_UP);
 	
 
@@ -29,10 +30,19 @@ int main() {
 	Stop button is pushed
 	Elevator order buttons are pushed
 	Arrival@floor
-	Timer is up (door closing) */
+	Timer is up (door closing)
+	Exit program using obstrction signal  */
 	
     while (1)
     	{
+	    	//Exit program using the obstruction signal
+	    	if (elev_get_obstruction_signal()) 
+		{
+            		elev_set_motor_direction(DIRN_STOP);
+          		break;
+        	}
+	    	
+	    
         	// Change direction when the elevator reaches top/bottom floor.
         	if (elev_get_floor_sensor_signal() == N_FLOORS - 1)
 			elev_set_motor_direction(DIRN_DOWN);
