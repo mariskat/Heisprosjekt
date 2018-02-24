@@ -49,6 +49,7 @@ void fsm_event_arrived_at_floor(int new_floor)
 		case DOOROPEN:
 			elev_set_door_open_lamp(1);
 			queue_clear_orders_at_floor(currentfloor);
+			queue_clear_lights_at_floor(currentfloor);
 			timer_start();                	
 			break;
 
@@ -60,6 +61,7 @@ void fsm_event_arrived_at_floor(int new_floor)
 				elev_set_motor_direction(DIRN_STOP);
 				elev_set_door_open_lamp(1);
 				queue_clear_orders_at_floor(currentfloor);
+				queue_clear_lights_at_floor(currentfloor);
 				timer_start();
 				current_state = DOOROPEN;
 			}
@@ -79,9 +81,11 @@ void fsm_event_arrived_at_floor(int new_floor)
    STOPBETWEENFLOORS, the order will be added to queue and evaluvate which direction the lift should drive.   */
 
 
-void fsm_event_order_button_pressed(elev_button_type_t button, int floor){ 
-	switch(current_state){
-        case IDLE:
+void fsm_event_order_button_pressed(elev_button_type_t button, int floor)
+{ 
+	switch(current_state)
+	{
+        	case IDLE:
 
         	if (floor!=currentfloor)
 		{
@@ -101,106 +105,115 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor){
 		} 
 		break;
 			
-	case DOOROPEN:
-	case MOVING:
-		queue_add_orders(button, floor);
-		elev_set_button_lamp(button, floor, 1);
-		break;
+		case DOOROPEN:
+		case MOVING:
+			queue_add_orders(button, floor);
+			elev_set_button_lamp(button, floor, 1);
+			break;
 
-	case STOPBETWEENFLOORS:
-		queue_add_orders(button, floor);
+		case STOPBETWEENFLOORS:
+			queue_add_orders(button, floor);
+			elev_set_button_lamp(button, floor, 1);
 
-		if (floor==currentfloor)
-			elev_set_motor_direction(-(previous_direction));
-		else 
-			direction = queue_get_direction(previous_direction, currentfloor);
-			elev_set_motor_direction(direction);
-		
-		current_state = MOVING;
-		break;
+			if (floor==currentfloor)
+				{elev_set_motor_direction(-(previous_direction));}
+			else 
+			{	
+				direction = queue_get_direction(previous_direction, currentfloor);
+				elev_set_motor_direction(direction);
+			}
+			
+			current_state = MOVING;
+			break;
 
-	default:
-        	break;
+		default:
+			break;
 	}
 	
 	
 /* Stop button is pressed: If the stop button is pushed, the lift will stop and the queue orders will be erased. If the lift is at
    a floor, the door will be open. The state will be changed to EMERGENCYSTOP. */	
 	
-void fsm_event_stop_pressed(){ 
-	switch(current_state){
+void fsm_event_stop_pressed()
+{ 
+	switch(current_state)
+	{
 			
-	case MOVING:
-	case DOOROPEN:
-	case STOPBETWEENFLOORS:
-	case IDLE:
-		elev_set_motor_direction(DIRN_STOP);
-		queue_remove_all_orders();
-		for(floorbtn = 0; floorbtn < N_FLOORS; floorbtn++){
-           		for(button = 0; button < N_BUTTONS; button++){
-                		elev_set_button_lamp(button,floorbtn,0); //BUTTONS ER FEIL
-          		  }
-        		}
-		elev_set_stop_lamp(1);
-
-		if (elev_get_floor_sensor_signal() != -1){
-			elev_set_door_open_lamp(1);
+		case MOVING:
+		case DOOROPEN:
+		case STOPBETWEENFLOORS:
+		case IDLE:
+			elev_set_motor_direction(DIRN_STOP);
+			queue_remove_all_orders();
 			
-		}
+			for(floorbtn = 0; floorbtn < N_FLOORS; floorbtn++){
+				queue_clear_lights_at_floor(floorbtn);
+			}
+			
+			elev_set_stop_lamp(1);
 
-		current_state = EMERGENCYSTOP;
-		break;
+			if (elev_get_floor_sensor_signal() != -1)
+				{elev_set_door_open_lamp(1);}
 
-	default:
-		break;
+			current_state = EMERGENCYSTOP;
+			break;
+
+		default:
+			break;
 	}
 }
 
 /* Stop button is released: The stop button light will be turned off. If the lift is at a floor, the door wil stay open for another
    three seconds and the lift will be in IDLE. Or else, the lift will be set to STOPBETWEENFLOOR state*/
 	
-void fsm_event_stop_released(){
-	switch(current_state){
-	case EMERGENCYSTOP:
-		elev_set_stop_lamp(0);
-		
-		if (elev_get_floor_sensor_signal() == -1){
-		    current_state = STOPBETWEENFLOORS;
-		}
-		else {
-			elev_set_door_open_lamp(0);
-			current_state = IDLE;
-			timer_start();
-			
-		}
-		break;
+void fsm_event_stop_released()
+{
+	switch(current_state)
+	{
+		case EMERGENCYSTOP:
+			elev_set_stop_lamp(0);
 
-	default:
-		break;
+			if (elev_get_floor_sensor_signal() == -1)
+			{
+			current_state = STOPBETWEENFLOORS;
+			}
+			else 
+			{
+				elev_set_door_open_lamp(0);
+				current_state = IDLE;
+				timer_start();
+			}
+			break;
+
+		default:
+			break;
 	}
+
+/* When the state of the lift is DOOROPEN, this function will close the door and set the direction of the lift the same as the
+   previous direction and set the state accordingly to IDLE or MOVING  */
 	
+void fsm_event_door_closed()
+{
+	switch(current_state)
+	{
+		case DOOROPEN:
+			elev_set_door_open_lamp(0);
+			direction = queue_get_direction(previous_direction, currentfloor);
+			elev_set_motor_direction(direction);
+			previous_direction = direction;
 
-void fsm_event_door_closed(){
-	switch(current_state){
-	case DOOROPEN:
-		elev_set_door_open_lamp(0);
-		direction = queue_get_direction(previous_direction, currentfloor);
-		elev_set_motor_direction(direction);
-		previous_direction = direction;
+			if(direction!=DIRN_STOP)
+			{
+				current_state = MOVING;
+			} 
+			else 
+			{
+				current_state = IDLE;
+			}		
+			break;
 
-		if(direction!=DIRN_STOP){
-			current_state = MOVING;
-		} 
-		else {
-			current_state = IDLE;
-		}		
-		break;
-
-	default:
-		break;
+		default:
+			break;
 	}		
 }
 	
-	
-}
-}
