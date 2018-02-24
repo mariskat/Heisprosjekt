@@ -116,7 +116,9 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor)
 			elev_set_button_lamp(button, floor, 1);
 
 			if (floor==currentfloor)
-				{elev_set_motor_direction(-(previous_direction));}
+			{	
+				elev_set_motor_direction(-(previous_direction));
+			}
 			else 
 			{	
 				direction = queue_get_direction(previous_direction, currentfloor);
@@ -153,7 +155,7 @@ void fsm_event_stop_pressed()
 			elev_set_stop_lamp(1);
 
 			if (elev_get_floor_sensor_signal() != -1)
-				{elev_set_door_open_lamp(1);}
+				elev_set_door_open_lamp(1);
 
 			current_state = EMERGENCYSTOP;
 			break;
