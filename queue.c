@@ -1,4 +1,5 @@
 #include "queue.h"
+#include "elev.h"
 
 //Order-array
 int orders[4][3]={
@@ -18,9 +19,12 @@ bool queue_check_floor_orders(int floor){
   return (orders[floor][0]+orders[floor][1]+orders[floor][2]);
 };
 
-//Clears floor orders
+//Clears floor orders and LIGHTS(Laksiya edit)
 void queue_clear_orders_at_floor(int floor){
   orders[floor]={0,0,0};
+  for(elev_button_type_t button=0; button<N_BUTTONS;buttons++)
+  {elev_set_button_lamp(button, floor, 0)}
+  
 };
 
 //Clear all previous orders
