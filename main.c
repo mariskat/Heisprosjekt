@@ -1,9 +1,11 @@
 #include "elev.h"
 #include "timer.h"
+#include "fsm.c"
 
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+
 
 int last_stop_button;
 int last_floor_visited = -9;
@@ -72,6 +74,7 @@ int main() {
 	    
         	int buttonfloor;
         	elev_button_type_t buttontype;
+	    	static int N_BUTTONS=3;
 	    
        		for (buttonfloor = 0; buttonfloor < N_FLOORS; buttonfloor++){
         		for(buttontype = 0; buttontype < N_BUTTONS; buttontype++)
@@ -108,7 +111,7 @@ int main() {
     	}
             
             
-        }
+	
    
     return 0;
 }
