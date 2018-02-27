@@ -19,7 +19,7 @@ int queue_stop(int floor, elev_button_type_t buttons);
 void queue_add_to(int floor,elev_button_type_t buttons);
 
 //Returns true if there is an order at the floor
-bool queue_ check_floor_orders(int floor);
+bool queue_check_floor_orders(int floor);
 
 //Clears the order in the current floor
 void queue_clear_orders_at_floor( int floor);
