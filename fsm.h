@@ -1,3 +1,6 @@
+#include <queue.h>
+
+
 void fsm_event_stop_pressed();
 void fsm_event_stop_released();
 void fsm_event_order_button_pressed();
