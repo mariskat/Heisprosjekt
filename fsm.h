@@ -1,4 +1,9 @@
-#include <queue.h>
+#include "elev.h"
+#include "fsm.h"
+#include "queue.h"
+#include "timer.h"
+
+#include <stdio.h>
 
 
 void fsm_event_stop_pressed();
