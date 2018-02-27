@@ -34,33 +34,33 @@ elev_motor_direction_t direction;
 
 void fsm_event_arrived_at_floor(int new_floor)
 {
-	currentfloor = new_floor;
+	currentFloor = new_floor;
 	 
 	switch(current_state)
 	{
 			
 		case INITIALIZE:
 			elev_set_motor_direction(DIRN_STOP);
-			elev_set_floor_indicator(currentfloor);
+			elev_set_floor_indicator(currentFloor);
 			current_state = IDLE;
 			break;
 
 		case IDLE:		
 		case DOOROPEN:
 			elev_set_door_open_lamp(1);
-			queue_clear_orders_at_floor(currentfloor);
-			queue_clear_lights_at_floor(currentfloor);
+			queue_clear_orders_at_floor(currentFloor);
+			queue_clear_lights_at_floor(currentFloor);
 			timer_start();                	
 			break;
 
 		case MOVING:
-			elev_set_floor_indicator(currentfloor);
+			elev_set_floor_indicator(currentFloor);
 
-			if(queue_should_stop(currentfloor, direction))
+			if(queue_should_stop(currentFloor, direction))
 			{
 				elev_set_motor_direction(DIRN_STOP);
 				elev_set_door_open_lamp(1);
-				queue_clear_orders_at_floor(currentfloor);
+				queue_clear_orders_at_floor(currentFloor);
 				queue_clear_lights_at_floor(currentfloor);
 				timer_start();
 				current_state = DOOROPEN;
@@ -87,11 +87,11 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor)
 	{
         	case IDLE:
 
-        	if (floor!=currentfloor)
+        	if (floor!=currentFloor)
 		{
 				queue_add_to_queue(button, floor);
 				elev_set_button_lamp(button, floor, 1); 
-				direction = queue_get_direction(previous_direction, currentfloor);
+				direction = queue_get_direction(previous_direction, currentFloor);
 				elev_set_motor_direction(direction);
 				previous_direction = direction;
 				current_state = MOVING;
@@ -115,13 +115,13 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor)
 			queue_add_orders(button, floor);
 			elev_set_button_lamp(button, floor, 1);
 
-			if (floor==currentfloor)
+			if (floor==currentFloor)
 			{	
 				elev_set_motor_direction(-(previous_direction));
 			}
 			else 
 			{	
-				direction = queue_get_direction(previous_direction, currentfloor);
+				direction = queue_get_direction(previous_direction, currentFloor);
 				elev_set_motor_direction(direction);
 			}
 			
@@ -200,7 +200,7 @@ void fsm_event_door_closed()
 	{
 		case DOOROPEN:
 			elev_set_door_open_lamp(0);
-			direction = queue_get_direction(previous_direction, currentfloor);
+			direction = queue_get_direction(previous_direction, currentFloor);
 			elev_set_motor_direction(direction);
 			previous_direction = direction;
 
