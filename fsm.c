@@ -1,9 +1,3 @@
-#include "elev.h"
-#include "fsm.h"
-#include "queue.h"
-#include "timer.h"
-
-#include <stdio.h>
 
 
 /* We define an enum named state_t for the different possible states for the lift. 
