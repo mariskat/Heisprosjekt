@@ -16,20 +16,15 @@ void
 fsm_event_stop_released();
 
 
-/* Order button is pushed: This function takes the button type and the floor of the button pushed as arguments. The order is added
-   to the queue and the according lights are set. If the lift is in IDLE and the order is not for the current floor, the lift will 
-   drive to floor immediatley and the state will changed to MOVING. Or else, the state will be changed to DOOROPEN and the door light
-   will be set. If the lift is busy (MOVING or DOOR OPEN) it will only set the lights and add the order to the queue. If the lift is
-   STOPBETWEENFLOORS, the order will be added to queue and evaluvate which direction the lift should drive.   */
+/* Order button is pushed: Sets order and according lights. If in idle: drive to floor immediately (moving state). If not: dooropen state. 
+   If busy: Set lights and add to order. If STOPBETWEENFLOORS: Add order to queue and evaluate best direction. */
 
 void 
 fsm_event_order_button_pressed();
 
 
-/* Arrived@floor: Given the current floor and the current state of the lift, this function will evaluvate which way the lift should
-   drive. When the current state is INITIALIZE, the lift will stop at the first floor reached and change state to idle. If the lift arrives a floor while
-   MOVING, the queue_should_stop() code will check if there are any orders at the floor in the right direction and stop accordingly. 
-   If the the lift is already at the floor (DOOROPEN or IDLE) the door light will be set. */
+/* Arrived@floor: Given the current floor and the current state of the lift, this function will evaluate which way the lift should
+   drive. */
 void 
 fsm_event_arrived_at_floor(int new_floor);
 
