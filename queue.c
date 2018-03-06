@@ -1,6 +1,3 @@
-#include "queue.h"
-#include "elev.h"
-
 //Order-array
 int orders[4][3]={
   {0,0,0},
