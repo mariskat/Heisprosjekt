@@ -15,7 +15,6 @@ typedef enum
 } state_t;
 
 state_t current_state = INITIALIZE;
-
 int currentFloor;
 elev_motor_direction_t direction;
 
@@ -26,7 +25,8 @@ elev_motor_direction_t direction;
    MOVING, the queue_should_stop() code will check if there are any orders at the floor in the right direction and stop accordingly. 
    If the the lift is already at the floor (DOOROPEN or IDLE) the door light will be set. */
 
-void fsm_event_arrived_at_floor(int new_floor)
+void 
+fsm_event_arrived_at_floor(int new_floor)
 {
 	currentFloor = new_floor;
 	 
@@ -75,7 +75,8 @@ void fsm_event_arrived_at_floor(int new_floor)
    STOPBETWEENFLOORS, the order will be added to queue and evaluvate which direction the lift should drive.   */
 
 
-void fsm_event_order_button_pressed(elev_button_type_t button, int floor)
+void 
+fsm_event_order_button_pressed(elev_button_type_t button, int floor)
 { 
 	switch(current_state)
 	{
@@ -130,7 +131,8 @@ void fsm_event_order_button_pressed(elev_button_type_t button, int floor)
 /* Stop button is pressed: If the stop button is pushed, the lift will stop and the queue orders will be erased. If the lift is at
    a floor, the door will be open. The state will be changed to EMERGENCYSTOP. */	
 	
-void fsm_event_stop_pressed()
+void 
+fsm_event_stop_pressed()
 { 
 	switch(current_state)
 	{
@@ -162,7 +164,8 @@ void fsm_event_stop_pressed()
 /* Stop button is released: The stop button light will be turned off. If the lift is at a floor, the door wil stay open for another
    three seconds and the lift will be in IDLE. Or else, the lift will be set to STOPBETWEENFLOOR state*/
 	
-void fsm_event_stop_released()
+void 
+fsm_event_stop_released()
 {
 	switch(current_state)
 	{
@@ -188,7 +191,8 @@ void fsm_event_stop_released()
 /* When the state of the lift is DOOROPEN, this function will close the door and set the direction of the lift the same as the
    previous direction and set the state accordingly to IDLE or MOVING  */
 	
-void fsm_event_door_closed()
+void 
+fsm_event_door_closed()
 {
 	switch(current_state)
 	{
