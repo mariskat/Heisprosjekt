@@ -7,12 +7,12 @@
 #include <stdio.h>
 
 
-int last_stop_button;
+int last_stop_button=0;
 int last_floor_visited = -9;
 
 int main() {
 	
-    /* Initializing hardware. This will return an error if the initializing is not sucsessful. 
+    /* Initializing hardware. This will return an error if the initializing is not successful. 
        If successful, the lift will start driving upwards. */
 	
     if (!elev_init()) 
@@ -69,7 +69,7 @@ int main() {
           
         
         	/*Elevator order: With a double loop, all order buttons are continuously checked. If a button is pushed
-		  fsm_event_order_button_pressed(buttontype, buttonfloor) will be run. The code will also check if the lift
+		  fsm_event_order_button_pressed(buttontype, buttonfloor) will run. The code will also check if the lift
 		  is already at the ordered floor.  */
 	    
         	int buttonfloor;
@@ -92,7 +92,7 @@ int main() {
        		}
         
 	    
-        	/* Arrived@Floor: Elev_get_floor_sensor_signal returns -1 while not at a floor. If the lift has arrived a floor,
+        	/* Arrived@Floor: Elev_get_floor_sensor_signal returns -1 while not at a floor. If the lift has arrived at floor,
 	    	   it will return the floornumber (0-3).  */
 	    
           	int floor = elev_get_floor_sensor_signal();
@@ -105,7 +105,7 @@ int main() {
         
        		/* Door closing: This part of the code checks if the time is up, and closes the door if the time is up */
 	    
-		if (timer_isTimeOut())
+		if (timer_timeIsUp())
 			fsm_event_door_closed();
 		
     	}
