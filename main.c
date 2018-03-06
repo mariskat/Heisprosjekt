@@ -1,10 +1,6 @@
 #include "elev.h"
 #include "timer.h"
-#include "fsm.c"
-
-#include <assert.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "fsm.h"
 
 
 int last_stop_button=0;
