@@ -1,4 +1,4 @@
-#include "timer.h"
+
 
 //Start timer
 void timer_start(void){                          //Start timer if the door is open
