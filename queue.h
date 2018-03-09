@@ -27,6 +27,10 @@ queue_check_floor_orders(int floor);
 void 
 queue_clear_orders_at_floor( int floor);
 
+//Clears the lights in the current floor
+void 
+queue_clear_lights_at_floor( int floor);
+
 //Clears all the previous orders
 void 
 queue_clear_all_orders();
