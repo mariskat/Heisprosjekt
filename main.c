@@ -1,113 +1,68 @@
-#include "elev.h"
-#include "timer.h"
-#include "fsm.h"
+#include <stdint.h>
+#include "uart.h"
+#include "gpio.h"
 
+#define A 17
+#define B 26
 
-int last_stop_button=0;
-int last_floor_visited = -9;
+int main(){
 
-int main() {
+	// Configure LED Matrix
+	for(int i = 4; i <= 15; i++){
+		GPIO->DIRSET = (1 << i);
+		GPIO->OUTCLR = (1 << i);
+	}
+
+	// Configure buttons
+	GPIO->PIN_CNF[17] = 0;
+	GPIO->PIN_CNF[26] = 0;
 	
-    /* Initializing hardware. This will return an error if the initializing is not successful. 
-       If successful, the lift will start driving upwards. */
-	
-    if (!elev_init()) 
-    {
-        printf("Unable to initialize elevator hardware!\n");
-        return 1;
-    }
+	int led_matrix_on = 0;
 
-    printf("Use to the obstruction signal to exit program.\n");
 	
-    elev_set_motor_direction(DIRN_UP);
+	
+	int sleep = 0;
+	uart_init();
+	while(1){
 	
 
-
-    /* CONTINOUS LOOP: The system will continously check if one of the following cases has occurred: 
-    	Change direction at top/bottom floor
-	Stop button is pushed
-	Elevator order buttons are pushed
-	Arrival@floor
-	Timer is up (door closing)
-	Exit program using obstrction signal  */
-	
-    while (1)
-    	{
-	    	//Exit program using the obstruction signal
-	    	if (elev_get_obstruction_signal()) 
-		{
-            		elev_set_motor_direction(DIRN_STOP);
-          		break;
-        	}
-	    	
-	    
-        	// Change direction when the elevator reaches top/bottom floor.
-        	if (elev_get_floor_sensor_signal() == N_FLOORS - 1)
-			elev_set_motor_direction(DIRN_DOWN);
-        	else if (elev_get_floor_sensor_signal() == 0) 
-           		elev_set_motor_direction(DIRN_UP);
+        if(!(GPIO->IN & (1<<A)))
+        {   
+            uart_send('A');     
+        }
         
-
-        	/* Stop elevator: Check if the button is pushed(1) or released(0). If the state of the button has changed,
-	    	   the code will run the fsm_event_stop_pressed() or fsm_event_stop_released() code accordingly
-		   and put the elevator in idle state.  */
-	    
-        	int stopbtn = elev_get_stop_signal();
-       		if(stopbtn != last_stop_button)
-		{
-           		if(stopbtn)
-          			fsm_event_stop_pressed();
-            		else 
-                		fsm_event_stop_released();
-            	}
+        if(!(GPIO->IN & (1<<B)))
+        {
+            uart_send('B');
+        }
         
-        	last_stop_button = stopbtn;
-          
         
-        	/*Elevator order: With a double loop, all order buttons are continuously checked. If a button is pushed
-		  fsm_event_order_button_pressed(buttontype, buttonfloor) will run. The code will also check if the lift
-		  is already at the ordered floor.  */
-	    
-        	int buttonfloor;
-        	elev_button_type_t buttontype;
-	    	static int N_BUTTONS=3;
-	    
-       		for (buttonfloor = 0; buttonfloor < N_FLOORS; buttonfloor++){
-        		for(buttontype = 0; buttontype < N_BUTTONS; buttontype++)
+        if(uart_read() != '\0')
+        {
+            if(!led_matrix_on)
+            {
+            GPIO->OUTSET = (1 << 13);
+			GPIO->OUTSET = (1 << 14);
+			GPIO->OUTSET = (1 << 15);
+			led_matrix_on=1;
+			}
+			else
 			{
-            			
-				int test = elev_get_button_signal(buttontype,buttonfloor);
-            			if (test)
-					{
-            					fsm_event_order_button_pressed(buttontype, buttonfloor);
-						if (buttonfloor == last_floor_visited)
-							fsm_event_arrived_at_floor(last_floor_visited);
-						
-					}
-        		}
-       		}
+			GPIO->OUTCLR = (1 << 13);
+			GPIO->OUTCLR = (1 << 14);
+			GPIO->OUTCLR = (1 << 15);
+			led_matrix_on=0;
+			}
+			
+        }
+       
         
-	    
-        	/* Arrived@Floor: Elev_get_floor_sensor_signal returns -1 while not at a floor. If the lift has arrived at floor,
-	    	   it will return the floornumber (0-3).  */
-	    
-          	int floor = elev_get_floor_sensor_signal();
-	    
-           	if(floor != last_floor_visited  &&  floor != -1)       
-			fsm_event_arrived_at_floor(floor);
-           		
-	    	last_floor_visited = floor;
-	    
-        
-       		/* Door closing: This part of the code checks if the time is up, and closes the door if the time is up */
-	    
-		if (timer_timeIsUp())
-			fsm_event_door_closed();
-		
-    	}
-            
-            
+		sleep = 10000;
+		while(--sleep);
+	}
 	
-   
-    return 0;
+	return 0;
 }
+
+
+//Regnet ut verdien under ved å trekke 0x520 fra 0x700, regne om til desimalverdi, og dele på 4
