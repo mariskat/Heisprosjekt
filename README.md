@@ -1,6 +1,7 @@
-# TTK4235 Embedded Systems
+# [TTK4235 Embedded Systems](https://www.ntnu.edu/studies/courses/TTK4235#tab=omEmnet)
+@Authors Laksiya Balasubramaniam and Marie Skatvedt.
 
-# Course content:
+**Course content:**
 The Unified Modeling Language (UML) as a general-purpose, developmental, modeling language in the field of software engineering, that is intended to provide a standard way to visualize the design of a system.
 
 Programmable logic Controllers (PLC).
